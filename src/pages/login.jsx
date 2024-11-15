@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from '../components/header';
-import LoginLogo from '../img/LoginLogo.png'; // 경로 확인
+import LoginLogo from '../img/LoginLogo.png';
 
 const Container = styled.div`
   display: flex;
@@ -90,14 +90,13 @@ const Button = styled.button`
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
     if (username && password) {
-      // 로그인 처리 (토큰 저장)
       localStorage.setItem('access_token', 'your-token'); // 예시로 토큰 저장
+      localStorage.setItem('username', username); // 사용자 아이디 저장
       alert('로그인 되었습니다!');
       navigate('/myhome'); // 로그인 후 /myhome 페이지로 이동
     } else {
@@ -118,13 +117,13 @@ const LoginPage = () => {
             type="text"
             placeholder="아이디 또는 이메일"
             value={username}
-            onChange={(e) => setUsername(e.target.value)} 
+            onChange={(e) => setUsername(e.target.value)}
           />
           <Input
             type="password"
             placeholder="비밀번호"
             value={password}
-            onChange={(e) => setPassword(e.target.value)} 
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Button onClick={handleLogin}>로그인</Button>
         </LoginContainer>
