@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/2024innosafe/static/css/main.e6c13ad2.css",
+    "main.js": "/2024innosafe/static/js/main.b8034fac.js",
+    "static/js/453.c122f606.chunk.js": "/2024innosafe/static/js/453.c122f606.chunk.js",
+    "static/media/LoginLogo.png": "/2024innosafe/static/media/LoginLogo.7244b0f74846fa0e70b9.png",
+    "static/media/logo.png": "/2024innosafe/static/media/logo.c75b408d1bc236d89b2e.png",
+    "static/media/phone.png": "/2024innosafe/static/media/phone.eb75ddc1895ceb35c9f8.png",
+    "index.html": "/2024innosafe/index.html",
+    "main.e6c13ad2.css.map": "/2024innosafe/static/css/main.e6c13ad2.css.map",
+    "main.b8034fac.js.map": "/2024innosafe/static/js/main.b8034fac.js.map",
+    "453.c122f606.chunk.js.map": "/2024innosafe/static/js/453.c122f606.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.b8034fac.js"
+  ]
+}
