@@ -111,16 +111,15 @@ const NewsContent = styled.div`
 `;
 
 const NewsTitle = styled.a`
-  font-size: 14px; /* 글자 크기 */
+  font-size: 14px;
   font-weight: bold;
   color: #00376e;
   text-decoration: none;
   display: -webkit-box; /* 블록으로 설정 */
   -webkit-line-clamp: 1; /* 한 줄로 제한 */
   -webkit-box-orient: vertical;
-  overflow: hidden; /* 넘치는 텍스트 숨김 */
-  text-overflow: ellipsis; /* 넘칠 경우 ... 표시 */
-  width: 100%; /* 부모 컨테이너 너비에 맞춤 */
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   &:hover {
     text-decoration: underline;
@@ -128,16 +127,16 @@ const NewsTitle = styled.a`
 `;
 
 const NewsDescription = styled.p`
-  font-size: 10px; /* 글자 크기 줄이기 */
+  font-size: 10px;
   color: #555;
   display: -webkit-box; /* 블록으로 설정 */
   -webkit-line-clamp: 1; /* 한 줄로 제한 */
   -webkit-box-orient: vertical;
-  overflow: hidden; /* 넘치는 텍스트 숨김 */
-  text-overflow: ellipsis; /* 넘칠 경우 ... 표시 */
-  margin: 0; /* 여백 제거 */
-  width: 100%; /* 부모 컨테이너 너비에 맞춤 */
-  line-height: 1.2; /* 줄 간격 줄이기 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  width: 100%;
+  line-height: 1.2;
 `;
 
 const NewsHeader = styled.div`
@@ -158,15 +157,15 @@ const NewsTitleHeader = styled.h3`
 const NewsDate = styled.p`
   font-size: 10px;
   color: #888;
-  text-align: right; /* 오른쪽 정렬 */
-  margin-top: 5px; /* 위쪽 여백 추가 */
-  margin-bottom: 0; /* 아래쪽 여백 제거 */
+  text-align: right;
+  margin-top: 5px;
+  margin-bottom: 0;
 `;
 
 const ButtonsContainer = styled.div`
   display: flex;
-  justify-content: flex-end; /* 버튼을 오른쪽 정렬 */
-  gap: 5px; /* 버튼 간 간격 */
+  justify-content: flex-end;
+  gap: 5px;
   margin-bottom: 15px;
   margin-top: 5px;
 `;
@@ -567,7 +566,7 @@ const MyHome = () => {
 
   const handlePopupConfirm = () => {
     setShowPopup(false);
-    navigate('/login'); // 로그인 페이지로 이동
+    navigate('/login');
   };
 
   
@@ -650,16 +649,16 @@ const MyHome = () => {
       <div
         style={{
           background: '#fff',
-          padding: '40px 50px', // 패딩 키움
-          width: '400px',       // 팝업 너비 키움
-          borderRadius: '15px', // 모서리 더 둥글게
-          boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.3)', // 그림자 키움
+          padding: '40px 50px',
+          width: '400px',
+          borderRadius: '15px',
+          boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.3)',
           textAlign: 'center',
         }}
       >
         <div
           style={{
-            fontSize: '22px', // 텍스트 크기 키움
+            fontSize: '22px',
             fontWeight: 'bold',
             marginBottom: '25px',
             color: '#333',
@@ -672,11 +671,11 @@ const MyHome = () => {
         style={{
           backgroundColor: '#658ff9',
           color: '#fff',
-          padding: '8px 16px', // 버튼 크기 축소
+          padding: '8px 16px',
           border: 'none',
-          borderRadius: '5px', // 모서리 약간 둥글게
+          borderRadius: '5px',
           cursor: 'pointer',
-          fontSize: '14px', // 버튼 텍스트 크기 축소
+          fontSize: '14px',
         }}
       >
         확인
