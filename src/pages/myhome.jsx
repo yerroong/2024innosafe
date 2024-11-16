@@ -396,12 +396,14 @@ const ValveLabel = styled.div`
   font-size: 20px;
   font-weight: bold;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
+  margin-top: 10px;
   text-align: center;
 `;
 
 const ValveStatusText = styled.div`
-  margin-top: 8px;
+  margin-top: 3px;
+  margin-bottom: 5px;
   font-size: 16px;
   font-weight: bold;
   color: ${(props) => (props.valveLocked ? 'green' : 'red')};
@@ -450,16 +452,16 @@ const CameraPopup = styled.div`
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-  width: 80%;
-  max-width: 800px;
-  height: 450px;
+  width: 60%;
+  max-width: 1200px;
+  height: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
 const StreamIframe = styled.iframe`
-  width: 100%;
+  width: 90%;
   height: 100%;
   border: none;
   border-radius: 10px;
@@ -476,7 +478,11 @@ const MyHome = () => {
   const [valveLocked, setValveLocked] = useState(false);
   const [iframeVisible, setIframeVisible] = useState(false);
   const [isFire, setIsFire] = useState(null); 
+  const [gasValue, setGasValue] = useState(null); // 가스 센서 값
+  const [gasStatus, setGasStatus] = useState(''); // 가스 상태
+  const [showGasWarning, setShowGasWarning] = useState(false); // 경고창 표시 여부
   const [showWarning, setShowWarning] = useState(false);
+  const [showTempWarning, setShowTempWarning] = useState(false);
   const [username, setUsername] = useState('사용자'); // 초기값 설정
   const [showPopup, setShowPopup] = useState(false); // 팝업 상태 추가
   const [showCameraPopup, setShowCameraPopup] = useState(false); // 카메라 팝업 상태
@@ -504,11 +510,17 @@ const MyHome = () => {
 
   const fetchIndoorData = async () => {
     try {
-      // 우리집 온도 가져오기
       const tempResponse = await axios.get('http://172.20.10.8/temp', { responseType: 'text' });
       const tempMatch = tempResponse.data.match(/온도:\s*([\d.]+)\s*ºC/);
       if (tempMatch) {
-        setTemperature(tempMatch[1]);
+        const tempValue = parseFloat(tempMatch[1]); // Convert temperature to a float
+        setTemperature(tempValue);
+
+        if (tempValue > 27) {
+          setShowTempWarning(true);
+        } else {
+          setShowTempWarning(false);
+        }
       }
 
       // 우리집 습도 가져오기
@@ -540,7 +552,29 @@ const MyHome = () => {
       console.error('용현동 날씨 데이터를 가져오는 중 오류가 발생했습니다:', err);
     }
   };
-
+  // 가스 상태를 가져오는 함수
+  const fetchGasData = async () => {
+    try {
+      const response = await axios.get('http://172.20.10.12/gas', { responseType: 'text' });
+      const match = response.data.match(/MQ-5 가스 센서 값:\s*(\d+)/); // 숫자만 추출
+      if (match) {
+        const gasValue = parseInt(match[1], 10); // 숫자로 변환
+        setGasValue(gasValue);
+        setGasStatus(gasValue > 3500 ? '가스 누출 감지' : '안전'); // 상태 설정
+        if (gasValue > 3500) {
+          setTimeout(() => {
+            setShowGasWarning(true); // 2초 후 경고창 표시
+          }, 2000);
+        }
+      } else {
+        setGasValue(null); // 데이터가 없을 때
+        setGasStatus('데이터 로딩 중...');
+      }
+    } catch (error) {
+      setGasValue(null); // 에러 시 초기화
+    }
+  };
+  
   const fetchNews = async () => {
     try {
       const response = await axios.get(
@@ -554,29 +588,41 @@ const MyHome = () => {
     }
   };
 
+  // 불꽃 감지 데이터를 가져오는 함수
+  const fetchFireData = async () => {
+    try {
+      const response = await axios.get('http://172.20.10.8/flame', { responseType: 'text' });
+      console.log('서버 응답:', response.data); // 서버 응답 확인
+  
+      // 정규식을 수정하여 불필요한 공백 허용
+      const match = response.data.match(/불꽃 감지 상태:\s*(불꽃 없음|불꽃 있음)/);
+      console.log('매칭된 값:', match);
+  
+      if (match) {
+        const fireStatus = match[1].trim(); // 결과를 정리 (필요 시)
+        console.log('불꽃 감지 상태:', fireStatus);
+  
+        // 상태 업데이트
+        setIsFire(fireStatus === '불꽃 있음');
+      } else {
+        console.log('불꽃 감지 상태를 추출하지 못했습니다.');
+      }
+    } catch (error) {
+      console.error('불꽃 데이터를 가져오는 중 오류가 발생했습니다:', error);
+    }
+  };
+
   useEffect(() => {
     fetchNews();
   }, [sortBy]); // 정렬 기준이 변경될 때마다 호출
 
-  const handleFireAlert = () => {
-    setTimeout(() => {
-      setShowWarning(true); 
-    }, 200);
-  };
-
-  const handlePopupConfirm = () => {
-    setShowPopup(false);
-    navigate('/login');
-  };
-
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchGasData(); // 주기적으로 데이터 불러오기
+    }, 2000); // 2초 간격
   
-  const closeWarning = () => {
-    setShowWarning(false);
-  };
-
-  const confirmWarning = () => {
-    window.location.href = '/';
-  };
+    return () => clearInterval(interval); // 컴포넌트 언마운트 시 정리
+  }, []);
 
   useEffect(() => {
     getWeather(latitude, longitude);
@@ -610,7 +656,8 @@ const MyHome = () => {
     const interval = setInterval(() => {
       fetchIndoorData();
       fetchOutdoorData();
-    }, 100);
+      fetchFireData();
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -620,13 +667,56 @@ const MyHome = () => {
   };
 
   const toggleValveLock = () => {
+    const url = valveLocked
+      ? 'http://172.20.10.12/servo1/down' // Off 상태일 때
+      : 'http://172.20.10.12/servo1/up'; // On 상태일 때
+  
     setValveLocked(!valveLocked);
-    setIframeVisible(!valveLocked);
-  };
+    setIframeVisible(true);
+  
+    // 임시로 iframe을 변경
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+      setIframeVisible(false);
+    }, 1000); // 1초 후 iframe 삭제
+  };  
 
   const toggleCameraPopup = () => {
     setShowCameraPopup(!showCameraPopup);
   };
+
+  const handleFireAlert = () => {
+    setTimeout(() => {
+      setShowWarning(true); 
+    }, 200);
+  };
+
+  const handlePopupConfirm = () => {
+    setShowPopup(false);
+    navigate('/login');
+  };
+
+  
+  const closeWarning = () => {
+    setShowWarning(false);
+  };
+
+  const confirmWarning = () => {
+    window.location.href = '/';
+  };
+
+  const GasStatus = styled.div`
+  color: #a45a5a;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: right;
+`;
 
   return (
     <Container>
@@ -701,8 +791,30 @@ const MyHome = () => {
           </WarningOverlay>
         )}
 
+        {showGasWarning && (
+          <WarningOverlay>
+            <WarningBox>
+              <CloseButton onClick={() => setShowGasWarning(false)}>✖</CloseButton>
+              <WarningTitle>⚠️위험⚠️</WarningTitle>
+              <WarningText>가스 누수가 감지되었습니다. 즉시, 집 상태를 확인하세요.</WarningText>
+              <ConfirmButton onClick={() => setShowGasWarning(false)}>확인</ConfirmButton>
+            </WarningBox>
+          </WarningOverlay>
+        )}
+
+        {showTempWarning && (
+          <WarningOverlay>
+            <WarningBox>
+              <CloseButton onClick={() => setShowGasWarning(false)}>✖</CloseButton>
+              <WarningTitle>⚠️위험⚠️</WarningTitle>
+              <WarningText>이상 온도가 감지되었습니다. 즉시, 집 상태를 확인하세요.</WarningText>
+              <ConfirmButton onClick={() => setShowGasWarning(false)}>확인</ConfirmButton>
+            </WarningBox>
+          </WarningOverlay>
+        )}
+
         <Row>
-          <WideBox>
+          <WideBox style={{ position: 'relative' }}>
             <BoxTitle>용현동 날씨</BoxTitle>
             <RefreshButton onClick={refreshWeather}>🔄 새로고침</RefreshButton>
             {error ? (
@@ -728,11 +840,17 @@ const MyHome = () => {
               : '데이터 로딩 중...'}
           </SmallBox>
           <SmallBox>
-            <ValveButton onClick={toggleValveLock}>
-              <ValveLabel>밸브</ValveLabel>
-              <img src={valveLocked ? onIcon : offIcon} alt={valveLocked ? 'On' : 'Off'} style={{ width: '110px', height: 'auto' }} />
-              <ValveStatusText valveLocked={valveLocked}>{valveLocked ? '밸브 잠금' : '밸브 해제'}</ValveStatusText>
-            </ValveButton>
+          <ValveButton onClick={toggleValveLock}>
+            <ValveLabel>밸브</ValveLabel>
+            <img src={valveLocked ? onIcon : offIcon} alt={valveLocked ? 'On' : 'Off'} style={{ width: '110px', height: 'auto' }} />
+            <ValveStatusText valveLocked={valveLocked}>
+              {valveLocked ? '밸브 잠금' : '밸브 해제'}
+            </ValveStatusText>
+          </ValveButton>
+            <GasStatus>
+              가스 누수 상태:{' '}
+              {gasValue === null ? '로딩 중...' : `${gasStatus} (${gasValue})`}
+            </GasStatus>
           </SmallBox>
           <FireBox>
             <FireTitle>불꽃 감지</FireTitle>
@@ -754,7 +872,7 @@ const MyHome = () => {
         </Row>
 
         {iframeVisible && (
-          <iframe src="http://172.20.10.8/servo1" style={{ display: 'none', width: '0', height: '0', border: 'none' }} title="Servo Control"></iframe>
+          <iframe src="http://172.20.10.8/servo1/up" style={{ display: 'none', width: '0', height: '0', border: 'none' }} title="Servo Control"></iframe>
         )}
 
         {/* 카메라 팝업 */}
@@ -763,7 +881,7 @@ const MyHome = () => {
             <CameraPopup>
               <CloseButton onClick={toggleCameraPopup}>✖</CloseButton>
               <StreamIframe
-                src="http://172.20.10.10/stream"
+                src="http://172.20.10.10"
                 title="Camera Stream"
                 allowFullScreen
               />
