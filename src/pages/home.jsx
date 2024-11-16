@@ -8,7 +8,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(to right, #a8cbff 0%, #ffffff 50%, #ffffff 100%);
+  background: linear-gradient(to right, #a8cbff 0%, #ffffff 70%, #ffffff 100%);
   width: 100%;
   height: 100vh;
 `;
