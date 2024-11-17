@@ -510,7 +510,7 @@ const MyHome = () => {
 
   const fetchIndoorData = async () => {
     try {
-      const tempResponse = await axios.get('http://172.20.10.8/temp', { responseType: 'text' });
+      const tempResponse = await axios.get('http://172.20.10.12/temp', { responseType: 'text' });
       const tempMatch = tempResponse.data.match(/온도:\s*([\d.]+)\s*ºC/);
       if (tempMatch) {
         const tempValue = parseFloat(tempMatch[1]); // Convert temperature to a float
@@ -524,7 +524,7 @@ const MyHome = () => {
       }
 
       // 우리집 습도 가져오기
-      const humiResponse = await axios.get('http://172.20.10.8/humi', { responseType: 'text' });
+      const humiResponse = await axios.get('http://172.20.10.12/humi', { responseType: 'text' });
       const humiMatch = humiResponse.data.match(/습도:\s*([\d.]+)%/);
       if (humiMatch) {
         setHumidity(humiMatch[1]);
@@ -555,7 +555,7 @@ const MyHome = () => {
   // 가스 상태를 가져오는 함수
   const fetchGasData = async () => {
     try {
-      const response = await axios.get('http://172.20.10.12/gas', { responseType: 'text' });
+      const response = await axios.get('http://172.20.10.8/gas', { responseType: 'text' });
       const match = response.data.match(/MQ-5 가스 센서 값:\s*(\d+)/); // 숫자만 추출
       if (match) {
         const gasValue = parseInt(match[1], 10); // 숫자로 변환
@@ -592,7 +592,7 @@ const MyHome = () => {
   // 불꽃 감지 데이터를 가져오는 함수
   const fetchFireData = async () => {
     try {
-      const response = await axios.get('http://172.20.10.8/flame', { responseType: 'text' });
+      const response = await axios.get('http://172.20.10.12/flame', { responseType: 'text' });
       console.log('서버 응답:', response.data); // 서버 응답 확인
   
       // 정규식을 수정하여 불필요한 공백 허용
@@ -669,8 +669,8 @@ const MyHome = () => {
 
   const toggleValveLock = () => {
     const url = valveLocked
-      ? 'http://172.20.10.12/servo1/down' // Off 상태일 때
-      : 'http://172.20.10.12/servo1/up'; // On 상태일 때
+      ? 'http://172.20.10.8/servo1/down' // Off 상태일 때
+      : 'http://172.20.10.8/servo1/up'; // On 상태일 때
   
     setValveLocked(!valveLocked);
     setIframeVisible(true);
@@ -882,7 +882,7 @@ const MyHome = () => {
             <CameraPopup>
               <CloseButton onClick={toggleCameraPopup}>✖</CloseButton>
               <StreamIframe
-                src="http://172.20.10.10"
+                src="http://172.20.10.10/stream"
                 title="Camera Stream"
                 allowFullScreen
               />
