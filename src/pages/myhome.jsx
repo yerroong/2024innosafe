@@ -560,11 +560,12 @@ const MyHome = () => {
       if (match) {
         const gasValue = parseInt(match[1], 10); // 숫자로 변환
         setGasValue(gasValue);
-        setGasStatus(gasValue > 3500 ? '가스 누출 감지' : '안전'); // 상태 설정
-        if (gasValue > 3500) {
+        setGasStatus(gasValue > 1600 ? '가스 누출 감지' : '안전'); // 상태 설정
+        
+        if (gasValue > 1600) {
           setTimeout(() => {
-            setShowGasWarning(true); // 2초 후 경고창 표시
-          }, 2000);
+            setShowGasWarning(true); // 1.5초 후 경고창 표시
+          }, 1500);
         }
       } else {
         setGasValue(null); // 데이터가 없을 때
